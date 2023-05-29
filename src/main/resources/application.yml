@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: author-book-api
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/authorbookdb?characterEncoding=UTF-8&serverTimezone=UTC
+    username: change-me
+    password: change-me
+  graphql:
+    graphiql:
+      enabled: true
+    cors:
+      allowed-origins: ${app.cors.allowed-origins}
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          default:
+            loggerLevel: BASIC
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000, https://main.d1nlw21wflcvgx.amplifyapp.com/
+
+management:
+  endpoints:
+    web:
+      exposure.include: beans, env, health, info, metrics, mappings
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:${ZIPKIN_PORT:9411}/api/v2/spans
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    groups-order: DESC
+    disable-swagger-default-url: true
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  level:
+    org.hibernate:
+      SQL: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE
+    com.ivanfranchin.authorbookapi.client.BookReviewApiClient: DEBUG
